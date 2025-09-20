@@ -1,3 +1,37 @@
+// TODO: Replace with custom home screen content when ready
+// Original Expo template code commented out below for reference
+
+import { StyleSheet, Text, View } from "react-native";
+
+export default function HomeScreen() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>🏠 Home Screen</Text>
+      <Text style={styles.subtext}>Ready for your custom content!</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FAFAFA", // Light theme background
+  },
+  text: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#2D2D2D",
+    marginBottom: 8,
+  },
+  subtext: {
+    fontSize: 16,
+    color: "#8A7CA8",
+  },
+});
+
+/* ORIGINAL EXPO TEMPLATE CODE - COMMENTED OUT
 import { Image } from "expo-image";
 import { Platform, StyleSheet } from "react-native";
 
@@ -105,3 +139,4 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
 });
+*/
