@@ -1,13 +1,46 @@
 // TODO: Replace with custom home screen content when ready
 // Original Expo template code commented out below for reference
 
-import { StyleSheet, Text, View } from "react-native";
+import { Colors } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useAuth, useClerk } from "@clerk/clerk-expo";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function HomeScreen() {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? "light"];
+  const { signOut, isSignedIn } = useAuth();
+  const clerk = useClerk();
+
+  const handleSignOut = async () => {
+    try {
+      console.log("🔒 Current sign in status:", isSignedIn);
+      console.log("🔓 Attempting to sign out...");
+
+      // Sign out and wait for completion
+      await signOut();
+
+      console.log("✅ Sign out completed successfully");
+      console.log("🔄 Auth state should now change, triggering route switch");
+
+      Alert.alert("Success", "Signed out successfully! Check for SignIn form.");
+    } catch (error) {
+      console.error("❌ Sign out error:", error);
+      Alert.alert("Error", `Sign out failed: ${error.message}`);
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>🏠 Home Screen</Text>
-      <Text style={styles.subtext}>Ready for your custom content!</Text>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.text, { color: colors.text }]}>🏠 Home Screen</Text>
+      <Text style={[styles.subtext, { color: colors.icon }]}>
+        Ready for your custom content!
+      </Text>
+
+      {/* Temporary Sign Out Button - Remove this later */}
+      <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+        <Text style={styles.signOutText}>Sign Out (to see SignIn form)</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -17,17 +50,26 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#FAFAFA", // Light theme background
   },
   text: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#2D2D2D",
     marginBottom: 8,
   },
   subtext: {
     fontSize: 16,
-    color: "#8A7CA8",
+    marginBottom: 20,
+  },
+  signOutButton: {
+    marginTop: 20,
+    padding: 12,
+    backgroundColor: "#9370DB",
+    borderRadius: 8,
+  },
+  signOutText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 

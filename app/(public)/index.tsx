@@ -1,15 +1,6 @@
-import { Text, View } from "react-native";
+import { SignIn } from "@/components/clerk/SignIn";
 
 export default function Index() {
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Auth</Text>
-    </View>
-  );
+  console.log("📱 Public route rendering - SignIn form should appear");
+  return <SignIn signUpUrl="" scheme="mindunwind" homeUrl="/(tabs)" />;
 }
