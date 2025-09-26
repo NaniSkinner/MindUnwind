@@ -48,15 +48,7 @@ export function SignIn({
     useState<SignInFirstFactor>();
   const [identifier, setIdentifier] = useState("");
 
-  console.log(
-    "🔐 SignIn Component - isLoaded:",
-    isLoaded,
-    "formState:",
-    formState
-  );
-
   if (!isLoaded) {
-    console.log("🔄 SignIn - showing loading...");
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" />
@@ -74,11 +66,8 @@ export function SignIn({
     router.replace(homeUrl);
   }
 
-  console.log("🔐 SignIn - rendering form state:", formState);
-
   switch (formState) {
     case FormState.SignIn:
-      console.log("📝 Rendering InitialSignInForm");
       return (
         <InitialSignInForm
           onSetFirstFactor={(factor, identifier) => {

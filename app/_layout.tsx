@@ -1,5 +1,6 @@
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
+import * as Linking from "expo-linking";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 
@@ -36,6 +37,42 @@ function RootLayoutWithAuth() {
     }
   }, [isSignedIn, isLoaded, segments]);
 
+  // Handle OAuth deep link callbacks
+  useEffect(() => {
+    const handleUrl = (url: string) => {
+      console.log("🔗 Deep link received:", url);
+      if (url.includes("oauth-callback")) {
+        console.log("📱 OAuth callback detected");
+        // Small delay to allow Clerk to process the session
+        setTimeout(() => {
+          if (isSignedIn) {
+            console.log("✅ Redirecting to protected after OAuth");
+            router.replace("/(protected)");
+          } else {
+            console.log("❌ OAuth failed, staying on public");
+            router.replace("/(public)");
+          }
+        }, 1000);
+      }
+    };
+
+    // Listen for deep links
+    const subscription = Linking.addEventListener("url", ({ url }) => {
+      handleUrl(url);
+    });
+
+    // Handle initial URL if app was opened via deep link
+    Linking.getInitialURL().then((url) => {
+      if (url) {
+        handleUrl(url);
+      }
+    });
+
+    return () => {
+      subscription?.remove();
+    };
+  }, [isSignedIn, router]);
+
   if (!isLoaded) {
     console.log("🔄 Auth still loading...");
     return null;
@@ -51,9 +88,6 @@ function RootLayoutWithAuth() {
 
 export default function RootLayout() {
   const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
-
-  // Debug logging
-  console.log("🔑 Clerk Key:", publishableKey ? "Present" : "MISSING");
 
   return (
     <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
