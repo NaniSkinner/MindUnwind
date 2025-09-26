@@ -1,6 +1,13 @@
-import { SignIn } from "@/components/clerk/SignIn";
+import { SignIn } from "../../components/clerk/SignIn";
 
-export default function Index() {
-  console.log("📱 Public route rendering - SignIn form should appear");
-  return <SignIn signUpUrl="" scheme="mindunwind" homeUrl="/(tabs)" />;
+export default function PublicHomePage() {
+  console.log("🔓 PublicHomePage rendering");
+
+  return (
+    <SignIn
+      homeUrl="/(protected)"
+      signUpUrl="/(public)/sign-up"
+      scheme="mindunwind://"
+    />
+  );
 }
