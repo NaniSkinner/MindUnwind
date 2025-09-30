@@ -87,19 +87,42 @@ export function OAuthButton({ strategy, children, hideText, scheme }: Props) {
       const redirectUrl = `${scheme}://oauth-callback`;
       console.log("OAuth redirect URL:", redirectUrl);
 
-      const { createdSessionId, setActive } = await startOAuthFlow({
+      const { createdSessionId, setActive, signIn } = await startOAuthFlow({
         redirectUrl: redirectUrl,
       });
 
       if (createdSessionId && setActive) {
         await setActive({ session: createdSessionId });
         console.log("OAuth success - session activated");
+      } else if (signIn && setActive) {
+        // Handle case where user completes OAuth but session already exists
+        await setActive({ session: signIn.createdSessionId });
+        console.log("OAuth success - existing session activated");
       } else {
         console.log("OAuth completed but no session created");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("OAuth error", err);
-      // Show user-friendly error
+
+      // Handle "session already exists" error gracefully
+      if (err.errors?.[0]?.code === "session_exists") {
+        console.log(
+          "Session already exists - trying to activate existing session"
+        );
+        try {
+          // Force re-check of auth state
+          window.location.reload?.() ||
+            (() => {
+              // For React Native, try to refresh the auth context
+              console.log("Attempting to refresh auth state");
+            })();
+          return;
+        } catch (refreshErr) {
+          console.error("Failed to refresh auth state:", refreshErr);
+        }
+      }
+
+      // Show user-friendly error for other cases
       alert("Sign in failed. Please try again.");
     }
   }, [startOAuthFlow, scheme]);

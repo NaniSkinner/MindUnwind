@@ -1,16 +1,23 @@
-import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
+import { ClerkProvider, useAuth, useUser } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
 import * as Linking from "expo-linking";
 import { Stack, useRouter, useSegments } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 function RootLayoutWithAuth() {
   const { isSignedIn, isLoaded } = useAuth();
+  const { user } = useUser();
   const segments = useSegments();
   const router = useRouter();
+  const [hasHandledInitialAuth, setHasHandledInitialAuth] = useState(false);
 
   // Debug logging
-  console.log("🔐 Auth Debug:", { isSignedIn, isLoaded, segments });
+  console.log("🔐 Auth Debug:", {
+    isSignedIn,
+    isLoaded,
+    segments,
+    userId: user?.id,
+  });
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -23,8 +30,18 @@ function RootLayoutWithAuth() {
       "inAuthGroup:",
       inAuthGroup,
       "isSignedIn:",
-      isSignedIn
+      isSignedIn,
+      "hasUser:",
+      !!user
     );
+
+    // Give a moment for auth state to stabilize after app start
+    if (!hasHandledInitialAuth) {
+      setTimeout(() => {
+        setHasHandledInitialAuth(true);
+      }, 500);
+      return;
+    }
 
     if (isSignedIn && inAuthGroup) {
       // Signed in but in public route - redirect to protected
@@ -35,7 +52,7 @@ function RootLayoutWithAuth() {
       console.log("🔀 Redirecting to public route");
       router.replace("/(public)");
     }
-  }, [isSignedIn, isLoaded, segments]);
+  }, [isSignedIn, isLoaded, segments, hasHandledInitialAuth, user]);
 
   // Handle OAuth deep link callbacks
   useEffect(() => {
@@ -43,16 +60,22 @@ function RootLayoutWithAuth() {
       console.log("🔗 Deep link received:", url);
       if (url.includes("oauth-callback")) {
         console.log("📱 OAuth callback detected");
-        // Small delay to allow Clerk to process the session
+        // Longer delay to allow Clerk to process the session and update React state
         setTimeout(() => {
-          if (isSignedIn) {
+          console.log("🔄 Checking auth state after OAuth callback:", {
+            isSignedIn,
+            hasUser: !!user,
+          });
+          if (isSignedIn || user) {
             console.log("✅ Redirecting to protected after OAuth");
             router.replace("/(protected)");
           } else {
             console.log("❌ OAuth failed, staying on public");
             router.replace("/(public)");
+            // Force a refresh of auth state
+            window.location?.reload?.();
           }
-        }, 1000);
+        }, 2000);
       }
     };
 

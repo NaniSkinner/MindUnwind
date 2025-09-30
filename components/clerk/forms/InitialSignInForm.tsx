@@ -107,7 +107,11 @@ export function InitialSignInForm({
     } catch (err: any) {
       const { errors } = err;
       if (errors[0].code == "session_exists") {
-        // TODO: Figure out how to handle this
+        console.log("📱 Session already exists - navigating to home");
+        // Session exists means user is already signed in, navigate to protected route
+        if (onSessionAlreadyExists) {
+          onSessionAlreadyExists();
+        }
         return;
       }
       console.error("signInError", JSON.stringify(err, null, 2));
