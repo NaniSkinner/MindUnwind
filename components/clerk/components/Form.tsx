@@ -1,7 +1,7 @@
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { StyleSheet, Text, View } from "react-native";
-
+import { Gradient } from "./gradient";
 interface FormProps {
   title: string;
   subtitle?: string;
@@ -14,31 +14,25 @@ export function Form({ title, subtitle, children, headerChildren }: FormProps) {
   const colors = Colors[colorScheme ?? "light"];
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.contentWrapper}>
-        <View
-          style={[
-            styles.headerContainer,
-            { backgroundColor: colors.background },
-          ]}
-        >
-          <Text style={[styles.headerTitle, { color: colors.text }]}>
-            {title}
-          </Text>
-          {subtitle && (
-            <Text style={[styles.headerSubtitle, { color: colors.icon }]}>
-              {subtitle}
+    <>
+      <Gradient isSpeaking={false} position="top" />
+      <View style={styles.container}>
+        <View style={styles.contentWrapper}>
+          <View style={styles.headerContainer}>
+            <Text style={[styles.headerTitle, { color: "#2F4F4F" }]}>
+              {title}
             </Text>
-          )}
-          {headerChildren}
-        </View>
-        <View
-          style={[styles.formContainer, { backgroundColor: colors.background }]}
-        >
-          {children}
+            {subtitle && (
+              <Text style={[styles.headerSubtitle, { color: "#556B2F" }]}>
+                {subtitle}
+              </Text>
+            )}
+            {headerChildren}
+          </View>
+          <View style={styles.formContainer}>{children}</View>
         </View>
       </View>
-    </View>
+    </>
   );
 }
 
