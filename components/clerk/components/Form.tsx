@@ -15,7 +15,7 @@ export function Form({ title, subtitle, children, headerChildren }: FormProps) {
 
   return (
     <>
-      <Gradient isSpeaking={false} position="top" />
+      <Gradient isSpeaking={false} position="bottom" />
       <View style={styles.container}>
         <View style={styles.contentWrapper}>
           <View style={styles.headerContainer}>
