@@ -1,13 +1,20 @@
 // TODO: Replace with custom home screen content when ready
 // Original Expo template code commented out below for reference
 
+import { Colors } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { StyleSheet, Text, View } from "react-native";
 
 export default function HomeScreen() {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? "light"];
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>🏠 Home Screen</Text>
-      <Text style={styles.subtext}>Ready for your custom content!</Text>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.text, { color: colors.text }]}>🏠 Home Screen</Text>
+      <Text style={[styles.subtext, { color: colors.icon }]}>
+        Ready for your custom content!
+      </Text>
     </View>
   );
 }
@@ -17,17 +24,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#FAFAFA", // Light theme background
   },
   text: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#2D2D2D",
     marginBottom: 8,
   },
   subtext: {
     fontSize: 16,
-    color: "#8A7CA8",
   },
 });
 
