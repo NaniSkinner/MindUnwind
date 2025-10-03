@@ -46,7 +46,7 @@ const ANIMATION_CONFIG = {
 const RADIUS_CONFIG = {
   minScale: 0.6,
   maxScale: 1.4,
-  speakingScale: 1.0,
+  speakingScale: 4.0,
   quitScale: 0.6,
   baseRadius: {
     default: width,
@@ -78,19 +78,19 @@ const getTargetY = (position: GradientPosition): number => {
 const calculateRadiusBounds = (baseRadius: number) => {
   "worklet";
   return {
-    min: baseRadius * RADIUS_CONFIG.minScale,
+    mini: baseRadius * RADIUS_CONFIG.minScale,
     max: baseRadius * RADIUS_CONFIG.maxScale,
   };
 };
 
 const calculateTargetRadius = (baseRadius: number, isSpeaking: boolean) => {
   "worklet";
-  const { min, max } = calculateRadiusBounds(baseRadius);
+  const { mini, max } = calculateRadiusBounds(baseRadius);
   const scale = isSpeaking
     ? RADIUS_CONFIG.speakingScale
     : RADIUS_CONFIG.quitScale;
 
-  return min + (max - min) * scale;
+  return mini + (max - mini) * scale;
 };
 
 export function Gradient({ position, isSpeaking }: GradientProps) {
@@ -104,8 +104,8 @@ export function Gradient({ position, isSpeaking }: GradientProps) {
   });
 
   const animatedRadius = useDerivedValue(() => {
-    const { min, max } = calculateRadiusBounds(baseRadiusValue.value);
-    const calculatedRadius = min + (max - min) * radiusScale.value;
+    const { mini, max } = calculateRadiusBounds(baseRadiusValue.value);
+    const calculatedRadius = mini + (max - mini) * radiusScale.value;
     return mountRadius.value < calculatedRadius
       ? mountRadius.value
       : calculatedRadius;
@@ -146,7 +146,7 @@ export function Gradient({ position, isSpeaking }: GradientProps) {
   useEffect(() => {
     if (isSpeaking) {
       radiusScale.value = withRepeat(
-        withTiming(RADIUS_CONFIG.quitScale, {
+        withTiming(RADIUS_CONFIG.speakingScale, {
           duration: ANIMATION_CONFIG.durations.PULSE,
         }),
         -1,
